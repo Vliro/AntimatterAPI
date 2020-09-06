@@ -6,17 +6,20 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import muramasa.antimatter.capability.AntimatterCaps;
 import muramasa.antimatter.capability.IEnergyHandler;
 import muramasa.antimatter.capability.IMachineHandler;
+import muramasa.antimatter.recipe.Recipe;
+import muramasa.antimatter.recipe.TagInput;
 import muramasa.antimatter.capability.item.ItemStackWrapper;
 import muramasa.antimatter.gui.SlotType;
 import muramasa.antimatter.machine.event.ContentEvent;
 import muramasa.antimatter.machine.MachineFlag;
-import muramasa.antimatter.machine.event.IMachineEvent;
 import muramasa.antimatter.tile.TileEntityMachine;
 import muramasa.antimatter.util.Utils;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.nbt.ListNBT;
+import net.minecraft.tags.ItemTags;
 import net.minecraft.util.Direction;
+import net.minecraft.util.Tuple;
 import net.minecraftforge.common.util.Constants;
 import net.minecraftforge.items.IItemHandler;
 import tesseract.Tesseract;
@@ -28,7 +31,10 @@ import tesseract.util.Dir;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Set;
 
 public class MachineItemHandler implements IItemNode<ItemStack>, ITickHost, IMachineHandler {
 
@@ -149,18 +155,41 @@ public class MachineItemHandler implements IItemNode<ItemStack>, ITickHost, IMac
         return list;
     }
 
-    public void consumeInputs(ItemStack... inputs) {
-        if (inputs == null || inputs.length == 0) return;
-        for (ItemStack input : inputs) {
+    public boolean consumeInputs(Recipe recipe, boolean simulate) {
+        if (recipe.getInputItems() == null || recipe.getInputItems().length == 0) return false;
+        boolean success = true;
+        Set<Integer> skipSlots = new HashSet<>();
+        for (ItemStack input : recipe.getInputItems()) {
             for (int i = 0; i < inputWrapper.getSlots(); i++) {
                 ItemStack item = inputWrapper.getStackInSlot(i);
-                if (Utils.equals(input, item) && !Utils.hasNoConsumeTag(input)) {
-                    item.shrink(input.getCount());
+                if (Utils.equals(input, item) && !Utils.hasNoConsumeTag(input) && !skipSlots.contains(i)) {
+                    if (!simulate) item.shrink(input.getCount());
+                    skipSlots.add(i);
                     break;
+                }
+                if (i == inputWrapper.getSlots()-1) {
+                    success = false;
                 }
             }
         }
-        tile.markDirty();
+
+        if (recipe.getTagInputs() != null && recipe.getTagInputs().length > 0) {
+            for (TagInput input : recipe.getTagInputs()) {
+                for (int i = 0; i < inputWrapper.getSlots(); i++) {
+                    ItemStack item = inputWrapper.getStackInSlot(i);
+                    if (input.tag.contains(item.getItem()) && !skipSlots.contains(i) /*&& !Utils.hasNoConsumeTag(input)*/) {
+                        if (!simulate) item.shrink(input.count);
+                        skipSlots.add(i);
+                        break;
+                    }
+                    if (i == inputWrapper.getSlots()-1) {
+                        success = false;
+                    }
+                }
+            }
+        }
+        if (!simulate) tile.markDirty();
+        return success;
     }
 
     public void addOutputs(ItemStack... outputs) {

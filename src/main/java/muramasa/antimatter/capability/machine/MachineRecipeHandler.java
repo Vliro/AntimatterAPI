@@ -128,7 +128,7 @@ public class MachineRecipeHandler<T extends TileEntityMachine> implements IMachi
     }
 
     public void consumeInputs() {
-        tile.itemHandler.ifPresent(h -> h.consumeInputs(activeRecipe.getInputItems()));
+        tile.itemHandler.ifPresent(h -> h.consumeInputs(activeRecipe,false));
         tile.fluidHandler.ifPresent(h -> h.consumeInputs(activeRecipe.getInputFluids()));
     }
 
@@ -149,7 +149,7 @@ public class MachineRecipeHandler<T extends TileEntityMachine> implements IMachi
     }
 
     public boolean canRecipeContinue() {
-        if (tile.itemHandler.isPresent() && !Utils.doItemsMatchAndSizeValid(activeRecipe.getInputItems(), tile.itemHandler.get().getInputs()))
+        if (tile.itemHandler.isPresent() && !tile.itemHandler.get().consumeInputs(activeRecipe,true)) //!Utils.doItemsMatchAndSizeValid(activeRecipe.getInputItems(), tile.itemHandler.get().getInputs()))
             return false;
         if (tile.fluidHandler.isPresent() && !Utils.doFluidsMatchAndSizeValid(activeRecipe.getInputFluids(), tile.fluidHandler.get().getInputs()))
             return false;

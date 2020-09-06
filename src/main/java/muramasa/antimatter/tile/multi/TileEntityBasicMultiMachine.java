@@ -26,7 +26,7 @@ public class TileEntityBasicMultiMachine extends TileEntityMultiMachine {
 
             @Override
             public void consumeInputs() {
-                itemHandler.ifPresent(h -> h.consumeInputs(activeRecipe.getInputItems()));
+                itemHandler.ifPresent(h -> h.consumeInputs(activeRecipe,false));
             }
 
             @Override
