@@ -2,7 +2,11 @@ package muramasa.antimatter.dynamic;
 
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import muramasa.antimatter.AntimatterProperties;
+import muramasa.antimatter.Ref;
 import muramasa.antimatter.client.baked.AntimatterBakedModel;
+import muramasa.antimatter.cover.CoverInstance;
+import muramasa.antimatter.machine.BlockMachine;
+import muramasa.antimatter.tile.TileEntityMachine;
 import net.minecraft.block.BlockState;
 import net.minecraft.client.renderer.model.BakedQuad;
 import net.minecraft.client.renderer.model.IBakedModel;
@@ -44,6 +48,11 @@ public class DynamicBakedModel extends AntimatterBakedModel<DynamicBakedModel> {
         if (!hasConfig || !(state.getBlock() instanceof BlockDynamic)) return data;
         mutablePos.setPos(pos);
         configData.setData(AntimatterProperties.DYNAMIC_CONFIG, ((BlockDynamic) state.getBlock()).getConfig(state, world, mutablePos, pos));
+        if (state.getBlock() instanceof BlockMachine) {
+            ((TileEntityMachine)world.getTileEntity(pos)).coverHandler.ifPresent(handler -> {
+                configData.setData(AntimatterProperties.MACHINE_COVER, handler.coverMaps());
+            });
+        }
         return configData;
     }
 

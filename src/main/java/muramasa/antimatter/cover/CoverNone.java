@@ -6,4 +6,9 @@ public class CoverNone extends Cover {
     public String getId() {
         return "none";
     }
+
+    @Override
+    public boolean hasTexture() {
+        return false;
+    }
 }

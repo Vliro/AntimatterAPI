@@ -8,6 +8,7 @@ import muramasa.antimatter.Ref;
 import muramasa.antimatter.client.AntimatterModelLoader.DynamicModelLoader;
 import muramasa.antimatter.client.baked.PipeBakedModel;
 import muramasa.antimatter.client.model.AntimatterModel;
+import muramasa.antimatter.cover.Cover;
 import muramasa.antimatter.dynamic.DynamicModel;
 import muramasa.antimatter.datagen.builder.AntimatterBlockModelBuilder;
 import muramasa.antimatter.datagen.providers.AntimatterBlockStateProvider;
@@ -31,6 +32,7 @@ public class AntimatterModelManager {
     private static final Object2ObjectOpenHashMap<ResourceLocation, IBlockProviderOverride> BLOCK_OVERRIDES = new Object2ObjectOpenHashMap<>();
 
     public static final AntimatterModelLoader LOADER_MAIN = new AntimatterModelLoader(new ResourceLocation(Ref.ID, "main"));
+    public static final AntimatterModelLoader.StaticModelLoader LOADER_STATIC = new AntimatterModelLoader.StaticModelLoader(new ResourceLocation(Ref.ID, "static"));
     public static final DynamicModelLoader LOADER_DYNAMIC = new DynamicModelLoader(new ResourceLocation(Ref.ID, "dynamic"));
     public static final DynamicModelLoader LOADER_PIPE = new DynamicModelLoader(new ResourceLocation(Ref.ID, "pipe")) {
         @Override
@@ -74,6 +76,10 @@ public class AntimatterModelManager {
         IBlockProviderOverride override = BLOCK_OVERRIDES.get(block.getRegistryName());
         if (override != null) override.apply(block, prov, prov.getBuilder(block));
         else if (block instanceof IModelProvider) ((IModelProvider) block).onBlockModelBuild(block, prov);
+    }
+
+    public static void onCoverModelBuild(Cover cover, AntimatterBlockStateProvider prov) {
+        if (cover != null) (cover).onCoverModelBuild(cover, prov);
     }
 
     public interface IItemProviderOverride {

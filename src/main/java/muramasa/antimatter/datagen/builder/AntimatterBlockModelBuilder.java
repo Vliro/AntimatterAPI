@@ -14,6 +14,7 @@ import muramasa.antimatter.registration.ITextureProvider;
 import muramasa.antimatter.texture.Texture;
 import net.minecraft.block.Block;
 import net.minecraft.util.ResourceLocation;
+import net.minecraftforge.client.model.ModelLoader;
 import net.minecraftforge.client.model.generators.BlockModelBuilder;
 import net.minecraftforge.client.model.generators.ExistingFileHelper;
 import org.apache.commons.lang3.StringUtils;
@@ -33,6 +34,11 @@ public class AntimatterBlockModelBuilder extends BlockModelBuilder {
 
     public AntimatterBlockModelBuilder(ResourceLocation outputLocation, ExistingFileHelper exFileHelper) {
         super(outputLocation, exFileHelper);
+    }
+
+    public void toSpecial() {
+        loader(AntimatterModelManager.LOADER_STATIC);
+        ModelLoader.addSpecialModel(this.location);
     }
 
     public AntimatterBlockModelBuilder property(String property, JsonElement element) {
@@ -97,6 +103,7 @@ public class AntimatterBlockModelBuilder extends BlockModelBuilder {
         });
         return this;
     }
+
 
     public interface IConfigFunction {
         ImmutableList.Builder<DynamicConfigBuilder> apply(DynamicConfigBuilder b, ImmutableList.Builder<DynamicConfigBuilder> l);

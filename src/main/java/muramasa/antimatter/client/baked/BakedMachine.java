@@ -32,7 +32,7 @@ public class BakedMachine extends AntimatterBakedModel {
         //int type = data.getData(MACHINE_TYPE).getInternalId();
         //int facing = data.getData(MACHINE_FACING).getIndex();
         //TextureData textureData = data.getData(MACHINE_TEXTURE);
-        CoverInstance[] covers = data.getData(MACHINE_COVER);
+        /*CoverInstance[] covers = data.getData(MACHINE_COVER);
 
         if (covers != null) {
             for (int s = 0; s < 6; s++) {
@@ -46,7 +46,7 @@ public class BakedMachine extends AntimatterBakedModel {
             for (int s = 0; s < 6; s++) {
                 //quads.addAll(getOverlays(type, s, textureData.getOverlay(), state, rand));
             }
-        }
+        }*/
 
         //ModelUtils.tex(quads, TextureMode.SINGLE, textureData.getBase(), QuadLayer.BASE); //Machine Base
         //ModelUtils.tex(quads, TextureMode.SINGLE, textureData.getBase(), QuadLayer.COVER_BASE); //Cover Base

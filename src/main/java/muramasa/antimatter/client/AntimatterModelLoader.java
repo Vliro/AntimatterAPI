@@ -8,6 +8,7 @@ import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import muramasa.antimatter.Antimatter;
 import muramasa.antimatter.AntimatterAPI;
 import muramasa.antimatter.client.model.AntimatterModel;
+import muramasa.antimatter.client.model.AntimatterStaticModel;
 import muramasa.antimatter.dynamic.DynamicModel;
 import muramasa.antimatter.registration.IAntimatterObject;
 import net.minecraft.client.renderer.model.BlockModel;
@@ -92,6 +93,45 @@ public class AntimatterModelLoader implements IModelLoader<AntimatterModel>, IAn
             } catch (Exception e) {
                 return onModelLoadingException(e);
             }
+        }
+
+        public IModelGeometry<?>[] buildModels(JsonDeserializationContext context, JsonArray array) {
+            IModelGeometry<?>[] models = new IModelGeometry<?>[array.size()];
+            for (int i = 0; i < array.size(); i++) {
+                if (!array.get(i).isJsonObject()) continue;
+                models[i] = new AntimatterModel(context.deserialize(array.get(i).getAsJsonObject(), BlockModel.class), buildRotations(array.get(i).getAsJsonObject()));
+            }
+            return models;
+        }
+    }
+
+    public static class StaticModelLoader extends AntimatterModelLoader {
+
+        public StaticModelLoader(ResourceLocation loc) {
+            super(loc);
+        }
+
+        @Override
+        public AntimatterModel read(JsonDeserializationContext context, JsonObject json) {
+            try {
+                IUnbakedModel baseModel = (json.has("model") && json.get("model").isJsonObject()) ? context.deserialize(json.get("model"), BlockModel.class) : ModelUtils.getMissingModel();
+                return new AntimatterStaticModel(baseModel, buildRotations(json));
+            } catch (Exception e) {
+                return onModelLoadingException(e);
+            }
+                /*if (!json.has("config") || !json.get("config").isJsonArray()) return baseModel;
+                Int2ObjectOpenHashMap<IModelGeometry<?>[]> configs = new Int2ObjectOpenHashMap<>();
+                for (JsonElement e : json.getAsJsonArray("config")) {
+                    if (!e.isJsonObject() || !e.getAsJsonObject().has("id") || !e.getAsJsonObject().has("models")) continue;
+                    int id = e.getAsJsonObject().get("id").getAsInt();
+                    configs.put(id, buildModels(context, e.getAsJsonObject().get("models").getAsJsonArray()));
+                }
+                String staticMapId = "";
+                if (json.has("staticMap") && json.get("staticMap").isJsonPrimitive()) staticMapId = json.get("staticMap").getAsString();
+                return new DynamicModel(baseModel, configs, staticMapId);
+            } catch (Exception e) {
+                return onModelLoadingException(e);
+            }*/
         }
 
         public IModelGeometry<?>[] buildModels(JsonDeserializationContext context, JsonArray array) {

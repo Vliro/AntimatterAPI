@@ -4,6 +4,7 @@ import muramasa.antimatter.AntimatterAPI;
 import muramasa.antimatter.Data;
 import muramasa.antimatter.Ref;
 import muramasa.antimatter.capability.CoverHandler;
+import muramasa.antimatter.cover.Cover;
 import muramasa.antimatter.datagen.builder.AntimatterBlockModelBuilder;
 import muramasa.antimatter.datagen.providers.AntimatterBlockStateProvider;
 import muramasa.antimatter.datagen.providers.AntimatterItemModelProvider;
@@ -99,7 +100,8 @@ public class BlockMachine extends BlockDynamic implements IAntimatterObject, IIt
         if (!world.isRemote) { //Only try opening containers server side
             TileEntity tile = world.getTileEntity(pos);
             if (tile != null) {
-                if (AntimatterAPI.onInteract(tile, player, hand, Utils.getInteractSide(hit))) return ActionResultType.SUCCESS;
+                //getInteractSide is not right here
+                if (AntimatterAPI.onInteract(tile, player, hand, /*Utils.getInteractSide(hit)*/hit.getFace())) return ActionResultType.SUCCESS;
                 if (getType().has(MachineFlag.GUI) && tile instanceof INamedContainerProvider && hand == Hand.MAIN_HAND) {
                     NetworkHooks.openGui((ServerPlayerEntity) player, (INamedContainerProvider) tile, tile.getPos());
                     return ActionResultType.SUCCESS;
@@ -209,6 +211,11 @@ public class BlockMachine extends BlockDynamic implements IAntimatterObject, IIt
         AntimatterBlockModelBuilder builder = prov.getBuilder(block);
         buildModelsForState(builder, MachineState.IDLE);
         buildModelsForState(builder, MachineState.ACTIVE);
+        AntimatterAPI.all(Cover.class, cover -> {
+            for (Direction o : Ref.DIRS) {
+                builder.config((o.getIndex()*10000 + cover.getId().hashCode()),(b,l) -> l.add(b.of(cover.getModel()).tex(of("base", type.getBaseTexture(tier), "cover", cover.getTextures()[0])).rot(o)));
+            }
+        });
         prov.state(block, builder);
     }
 

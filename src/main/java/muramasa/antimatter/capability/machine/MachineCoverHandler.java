@@ -1,5 +1,6 @@
 package muramasa.antimatter.capability.machine;
 
+import it.unimi.dsi.fastutil.objects.Object2ObjectMap;
 import muramasa.antimatter.Data;
 import muramasa.antimatter.capability.IMachineHandler;
 import muramasa.antimatter.capability.RotatableCoverHandler;
@@ -66,5 +67,9 @@ public class MachineCoverHandler extends RotatableCoverHandler<TileEntityMachine
     @Override
     public Direction getTileFacing() {
         return getTile().getFacing();
+    }
+
+    public Object2ObjectMap<Direction, CoverInstance<TileEntityMachine>> coverMaps() {
+        return this.covers;
     }
 }

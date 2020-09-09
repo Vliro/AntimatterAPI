@@ -7,6 +7,7 @@ import muramasa.antimatter.tile.TileEntityMachine;
 import muramasa.antimatter.util.Utils;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.Direction;
+import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fluids.capability.CapabilityFluidHandler;
 import net.minecraftforge.items.CapabilityItemHandler;
 
@@ -18,6 +19,11 @@ public class CoverOutput extends Cover {
     public CoverOutput() {
         super();
         AntimatterAPI.register(Cover.class, getId(), this);
+    }
+
+    @Override
+    public ResourceLocation getModel() {
+        return getBasicModel();
     }
 
     @Override

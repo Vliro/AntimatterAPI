@@ -3,6 +3,7 @@ package muramasa.antimatter.datagen.providers;
 import muramasa.antimatter.AntimatterAPI;
 import muramasa.antimatter.Ref;
 import muramasa.antimatter.client.AntimatterModelManager;
+import muramasa.antimatter.cover.Cover;
 import muramasa.antimatter.datagen.ExistingFileHelperOverride;
 import muramasa.antimatter.datagen.IAntimatterProvider;
 import muramasa.antimatter.datagen.builder.AntimatterBlockModelBuilder;
@@ -46,7 +47,14 @@ public class AntimatterBlockStateProvider extends BlockStateProvider implements 
 
     @Override
     protected void registerStatesAndModels() {
+        buildCustomModels();
         processBlocks(providerDomain);
+    }
+
+    protected void buildCustomModels() {
+        AntimatterAPI.all(Cover.class, providerDomain).forEach(b -> {
+            AntimatterModelManager.onCoverModelBuild(b, this);
+        });
     }
 
     @Override
@@ -77,6 +85,10 @@ public class AntimatterBlockStateProvider extends BlockStateProvider implements 
 
     public AntimatterBlockModelBuilder getBuilder(Block block) {
         return (AntimatterBlockModelBuilder) models().getBuilder(block.getRegistryName().getPath());
+    }
+
+    public AntimatterBlockModelBuilder getBuilder(ResourceLocation loc) {
+        return (AntimatterBlockModelBuilder) models().getBuilder(loc.getPath());
     }
 
     public BlockModelBuilder cubeAll(Block block, ResourceLocation texture) {
